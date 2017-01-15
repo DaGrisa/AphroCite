@@ -28,21 +28,22 @@
 // string
 #define CopyString strcpy
 #define CompareMemory memcmp
+#define CompareString strcmp
 
 // Unit Testing
 #define TEST_OK "Test OK: "
 #define TEST_NOK "Test FAILED: "
 
-#define RED   "\x1B[31m"
-#define GREEN   "\x1B[32m"
-#define RESET "\x1B[0m"
+#define TEXT_COLOR_RED   "\x1B[31m"
+#define TEXT_COLOR_GREEN   "\x1B[32m"
+#define TEXT_COLOR_RESET "\x1B[0m"
 
 void testSuccessMessage(char *message){
-    FormattedPrint(GREEN "%s" RESET  "%s\n", TEST_OK, message);
+    FormattedPrint(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET  "%s\n", TEST_OK, message);
 }
 
 void testFailureMessage(char *message){
-    FormattedPrint(RED "%s " RESET "%s\n", TEST_NOK, message);
+    FormattedPrint(TEXT_COLOR_RED "%s " TEXT_COLOR_RESET "%s\n", TEST_NOK, message);
     exit(EXIT_FAILURE);
 }
 
