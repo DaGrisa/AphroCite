@@ -10,9 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Constants
+// bool
 #define FALSE 0
 #define TRUE 1 
+
+typedef unsigned int bool32;
 
 // Operators
 #define OR ||
@@ -33,36 +35,35 @@
 
 // Unit Testing
 #define TEST_OK "Test OK: "
-#define TEST_NOK "Test FAILED: "
+#define TEST_FAILED "Test FAILED: "
 
-// Color
-#define RED   "\x1B[31m"
-#define GREEN   "\x1B[32m"
-#define RESET "\x1B[0m"
+#define COLOR_RED   "\x1B[31m"
+#define COLOR_GREEN   "\x1B[32m"
+#define COLOR_RESET "\x1B[0m"
 
 void Test_SuccessMessage(char *message){
-    Print_Format(GREEN "%s" RESET  "%s\n", TEST_OK, message);
+    Print_Format(COLOR_GREEN "%s" COLOR_RESET  "%s\n", TEST_OK, message);
 }
 
 void Test_FailureMessage(char *message){
-    Print_Format(RED "%s " RESET "%s\n", TEST_NOK, message);
-    exit(EXIT_FAILURE);
+    Print_Format(COLOR_RED "%s " COLOR_RESET "%s\n", TEST_FAILED, message);
 }
 
-void testCheckCondition(int condition, char *description){
+void Test_CheckCondition(bool32 condition, char *description){
     if(condition){
         Test_SuccessMessage(description);
     } else {
         Test_FailureMessage(description);
+        exit(EXIT_FAILURE);
     }
 }
 
-void assertTrue(char* description, int condition){
-    testCheckCondition(condition, description);
+void Assert_True(char* description, bool32 condition){
+    Test_CheckCondition(condition, description);
 }
 
-void assertCompare(char* description, void* actual, void* desired, int size){
-    testCheckCondition(Memory_Compare(actual, desired, size) == 0, description);
+void Assert_Compare(char* description, void* actual, void* desiCOLOR_red, int size){
+    Test_CheckCondition(Memory_Compare(actual, desiCOLOR_red, size) == 0, description);
 }
 
 #endif //APHROCITE_APHROCITE_H
