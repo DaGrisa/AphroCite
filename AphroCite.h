@@ -27,6 +27,7 @@ typedef unsigned int bool32;
 
 // string
 #define CString_Copy strcpy
+#define CString_Compare strcmp
 
 // memory
 #define Memory_Allocate malloc
@@ -37,16 +38,17 @@ typedef unsigned int bool32;
 #define TEST_OK "Test OK: "
 #define TEST_FAILED "Test FAILED: "
 
-#define COLOR_RED   "\x1B[31m"
-#define COLOR_GREEN   "\x1B[32m"
-#define COLOR_RESET "\x1B[0m"
+#define TEXT_COLOR_RED   "\x1B[31m"
+#define TEXT_COLOR_GREEN   "\x1B[32m"
+#define TEXT_COLOR_RESET "\x1B[0m"
 
 void Test_SuccessMessage(char *message){
-    Print_Format(COLOR_GREEN "%s" COLOR_RESET  "%s\n", TEST_OK, message);
+    Print_Format(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET  "%s\n", TEST_OK, message);
 }
 
 void Test_FailureMessage(char *message){
-    Print_Format(COLOR_RED "%s " COLOR_RESET "%s\n", TEST_FAILED, message);
+    Print_Format(TEXT_COLOR_RED "%s " TEXT_COLOR_RESET "%s\n", TEST_NOK, message);
+    exit(EXIT_FAILURE);
 }
 
 void Test_CheckCondition(bool32 condition, char *description){
