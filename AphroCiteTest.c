@@ -20,9 +20,9 @@ void testConstants(){
 }
 
 void testOperators(){
-    assertTrue("and Operator", 0 == FALSE and 1 == TRUE);
-    assertTrue("or Operator", 0 == FALSE or 1 == TRUE);
-    assertTrue("not Operator", 0 == not TRUE);
+    assertTrue("and Operator", 0 == FALSE AND 1 == TRUE);
+    assertTrue("or Operator", 0 == FALSE OR 1 == TRUE);
+    assertTrue("not Operator", 0 == NOT TRUE);
 }
 
 void testMacros(){
@@ -32,25 +32,25 @@ void testMacros(){
 
 void testStdlib(){
     int* pInteger;
-    pInteger = AllocateMemory(sizeof(int));
+    pInteger = Memory_Allocate(sizeof(int));
     *pInteger = 42;
 
     int* pIntegerCompare;
-    pIntegerCompare = AllocateMemory(sizeof(int));
+    pIntegerCompare = Memory_Allocate(sizeof(int));
     *pIntegerCompare = 42;
 
     assertCompare("Allocate Memory Macro", pInteger, pIntegerCompare, sizeof(int));
 
-    assertTrue("Compare Memory Macro", CompareMemory(&pInteger, &pIntegerCompare, sizeof(int)));
+    assertTrue("Compare Memory Macro", Memory_Compare(&pInteger, &pIntegerCompare, sizeof(int)));
 
-    FreeMemory(pInteger);
-    FreeMemory(pIntegerCompare);
+    Memory_Free(pInteger);
+    Memory_Free(pIntegerCompare);
 };
 
 void testString(){
     char formattedString[] = "It's all about the %d\n";
     char copyString[] = "It's all about the 21\n";
-    CopyString(copyString, formattedString);
+    CString_Copy(copyString, formattedString);
 
     assertCompare("Copy String Macro", &copyString, &formattedString, sizeof(copyString));
 };

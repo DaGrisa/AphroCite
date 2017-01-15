@@ -12,45 +12,48 @@
 
 // Constants
 #define FALSE 0
-#define TRUE !(FALSE)
+#define TRUE 1 
 
 // Operators
-#define or ||
-#define and &&
-#define not !
+#define OR ||
+#define AND &&
+#define NOT !
 
 // Function Macros
-// stdio
-#define FormattedPrint printf
-// stdlib
-#define AllocateMemory malloc
-#define FreeMemory free
+// print
+#define Print_Format printf
+
 // string
-#define CopyString strcpy
-#define CompareMemory memcmp
+#define CString_Copy strcpy
+
+// memory
+#define Memory_Allocate malloc
+#define Memory_Free free
+#define Memory_Compare memcmp
 
 // Unit Testing
 #define TEST_OK "Test OK: "
 #define TEST_NOK "Test FAILED: "
 
+// Color
 #define RED   "\x1B[31m"
 #define GREEN   "\x1B[32m"
 #define RESET "\x1B[0m"
 
-void testSuccessMessage(char *message){
-    FormattedPrint(GREEN "%s" RESET  "%s\n", TEST_OK, message);
+void Test_SuccessMessage(char *message){
+    Print_Format(GREEN "%s" RESET  "%s\n", TEST_OK, message);
 }
 
-void testFailureMessage(char *message){
-    FormattedPrint(RED "%s " RESET "%s\n", TEST_NOK, message);
+void Test_FailureMessage(char *message){
+    Print_Format(RED "%s " RESET "%s\n", TEST_NOK, message);
     exit(EXIT_FAILURE);
 }
 
 void testCheckCondition(int condition, char *description){
     if(condition){
-        testSuccessMessage(description);
+        Test_SuccessMessage(description);
     } else {
-        testFailureMessage(description);
+        Test_FailureMessage(description);
     }
 }
 
@@ -59,7 +62,7 @@ void assertTrue(char* description, int condition){
 }
 
 void assertCompare(char* description, void* actual, void* desired, int size){
-    testCheckCondition(CompareMemory(actual, desired, size) == 0, description);
+    testCheckCondition(Memory_Compare(actual, desired, size) == 0, description);
 }
 
 #endif //APHROCITE_APHROCITE_H
