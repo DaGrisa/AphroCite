@@ -62,8 +62,8 @@ void Assert_True(char* description, bool32 condition){
     Test_CheckCondition(condition, description);
 }
 
-void Assert_Compare(char* description, void* actual, void* desiCOLOR_red, int size){
-    Test_CheckCondition(Memory_Compare(actual, desiCOLOR_red, size) == 0, description);
+void Assert_Compare(char* description, void* actual, void* desired, int size){
+    Test_CheckCondition(Memory_Compare(actual, desired, size) == 0, description);
 }
 
 #endif //APHROCITE_APHROCITE_H
