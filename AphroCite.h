@@ -11,21 +11,22 @@
 #include <string.h>
 
 // bool
+typedef unsigned int bool32;
 #define FALSE 0
 #define TRUE 1 
-
-typedef unsigned int bool32;
 
 // Operators
 #define OR ||
 #define AND &&
 #define NOT !
 
-// Function Macros
 // print
-#define Print_Format printf
+#define Console_Print(cString) printf(cString)
+#define Console_Print_Format(format, ...) printf(format, __VA_ARGS__)
+#define Console_Print_Format_Line(format, ...) printf(format "\n", __VA_ARGS__)
+#define Console_Read_Line(cString) scanf(cString)
 
-// string
+// c-string
 #define CString_Copy strcpy
 
 // memory
@@ -42,11 +43,11 @@ typedef unsigned int bool32;
 #define COLOR_RESET "\x1B[0m"
 
 void Test_SuccessMessage(char *message){
-    Print_Format(COLOR_GREEN "%s" COLOR_RESET  "%s\n", TEST_OK, message);
+    Console_Print_Format_Line(COLOR_GREEN "%s" COLOR_RESET  "%s", TEST_OK, message);
 }
 
 void Test_FailureMessage(char *message){
-    Print_Format(COLOR_RED "%s " COLOR_RESET "%s\n", TEST_FAILED, message);
+    Console_Print_Format_Line(COLOR_RED "%s " COLOR_RESET "%s", TEST_FAILED, message);
 }
 
 void Test_CheckCondition(bool32 condition, char *description){
