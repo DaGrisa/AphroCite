@@ -53,6 +53,7 @@ void testString(){
     CString_Copy(copyString, formattedString);
 
     Assert_Compare("Copy String Macro", &copyString, &formattedString, sizeof(copyString));
+    Assert_True("Compare Sring Macro", CString_Compare(formattedString, copyString) == 0);
 };
 
 // Main
