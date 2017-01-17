@@ -1,5 +1,5 @@
 call vcvarsall x64
 
 call clean.bat
-cl AphroCiteTest.c -o AphroCiteTest /Zi
+cl AphroCiteTest.c -o AphroCiteTest /Zi -Wall
 AphroCiteTest.exe

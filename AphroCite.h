@@ -11,21 +11,23 @@
 #include <string.h>
 
 // bool
+typedef unsigned int bool32;
 #define FALSE 0
 #define TRUE 1 
-
-typedef unsigned int bool32;
 
 // Operators
 #define OR ||
 #define AND &&
 #define NOT !
 
-// Function Macros
 // print
-#define Print_Format printf
+#define Console_Print(cString) printf(cString)
+#define Console_Print_Line(cString) printf(cString "\n")
+#define Console_Print_Format(format, ...) printf(format, __VA_ARGS__)
+#define Console_Print_Format_Line(format, ...) printf(format "\n", __VA_ARGS__)
+#define Console_Read_Line(cString) scanf(cString)
 
-// string
+// c-string
 #define CString_Copy strcpy
 #define CString_Compare strcmp
 
@@ -42,12 +44,12 @@ typedef unsigned int bool32;
 #define TEXT_COLOR_GREEN   "\x1B[32m"
 #define TEXT_COLOR_RESET "\x1B[0m"
 
-void Test_SuccessMessage(char *message){
-    Print_Format(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET  "%s\n", TEST_OK, message);
+void Test_SuccessMessage(char *message) {
+    Console_Print_Format_Line(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET "%s", TEST_OK, message);
 }
 
 void Test_FailureMessage(char *message){
-    Print_Format(TEXT_COLOR_RED "%s " TEXT_COLOR_RESET "%s\n", TEST_NOK, message);
+    Console_Print_Format_Line(TEXT_COLOR_RED "%s " TEXT_COLOR_RESET "%s", TEST_FAILED, message);
     exit(EXIT_FAILURE);
 }
 
