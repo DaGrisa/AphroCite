@@ -22,6 +22,7 @@ typedef unsigned int bool32;
 
 // print
 #define Console_Print(cString) printf(cString)
+#define Console_Print_Line(cString) printf(cString "\n")
 #define Console_Print_Format(format, ...) printf(format, __VA_ARGS__)
 #define Console_Print_Format_Line(format, ...) printf(format "\n", __VA_ARGS__)
 #define Console_Read_Line(cString) scanf(cString)
