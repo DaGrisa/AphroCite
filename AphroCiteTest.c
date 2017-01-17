@@ -56,11 +56,45 @@ void testString(){
     Assert_True("Compare Sring Macro", CString_Compare(formattedString, copyString) == 0);
 };
 
+int TestUnitTestSuccess() {
+    UNITTEST_SUCCESS;
+}
+
+int TestUnitTestFail() {
+    UNITTEST_FAIL;
+    UNITTEST_SUCCESS;
+}
+
+int TestUnitTestAssertTrueSuccess() {
+    UnitTest_Assert_True(TRUE);
+    UNITTEST_SUCCESS;
+}
+
+int TestUnitTestAssertTrueFail() {
+    UnitTest_Assert_True(FALSE);
+    UNITTEST_SUCCESS;
+}
+
 // Main
 int main() {
     testConstants();
     testOperators();
     testMacros();
+
+    Console_Print_NextLine();
+    Console_Print_Line(".---------------------.");
+    Console_Print_Line("| New Unit Test Style |");
+    Console_Print_Line(".---------------------.");
+    Console_Print_NextLine();
+
+    T_UnitTest_TestSuite testSuite = {0};
+
+    UnitTest_RunSingle(&testSuite, &TestUnitTestSuccess, "Test Success Unit Test");
+    UnitTest_RunSingle(&testSuite, &TestUnitTestFail, "Test Fail Unit Test");
+    UnitTest_RunSingle(&testSuite, &TestUnitTestAssertTrueSuccess, "Test Success TRUE assert Unit Test");
+    UnitTest_RunSingle(&testSuite, &TestUnitTestAssertTrueFail, "Test Fail TRUE assert Unit Test");
+
+    UnitTest_PrintTestSuiteState(&testSuite);
 
     return EXIT_SUCCESS;
 }
