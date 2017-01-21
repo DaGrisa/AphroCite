@@ -90,19 +90,10 @@ typedef enum _E_UnitTest_TestState {
 #define UNITTEST_FAIL return UNITTEST_TESTSTATE_FAIL
 
 #define UnitTest_Assert_True(condition) return Internal_UnitTest_Assert_True(condition, __FILE__, __FUNCTION__, __LINE__)
-#define UNITTest_Assert_False(condition) return Internal_UnitTest_Assert_False(condition, __FILE__, __FUCNTION__, __LINE__)
+#define UnitTest_Assert_False(condition) return Internal_UnitTest_Assert_True(!(condition), __FILE__, __FUCNTION__, __LINE__)
 
 E_UnitTest_TestState Internal_UnitTest_Assert_True(bool32 condition, char* file, char* function, int line) {
     if(condition == FALSE) { 
-        Console_Print_Format_Line("Assertion Failed: File: %s, Function: %s, Line: %d", file, function, line);
-        return UNITTEST_TESTSTATE_FAIL;
-    } else {
-        return UNITTEST_TESTSTATE_SUCCESS;
-    }
-}
-
-E_UnitTest_TestState Internal_UnitTest_Assert_False(bool32 condition, char* file, char* function, int line) {
-    if(condition == TRUE) { 
         Console_Print_Format_Line("Assertion Failed: File: %s, Function: %s, Line: %d", file, function, line);
         return UNITTEST_TESTSTATE_FAIL;
     } else {
