@@ -88,6 +88,7 @@ int main() {
     Console_Print_NextLine();
 
     T_UnitTest_TestSuite testSuite = {0};
+    testSuite.name = "New Unit Test";
 
     UnitTest_RunSingle(&testSuite, &TestUnitTestSuccess, "Test Success Unit Test");
     UnitTest_RunSingle(&testSuite, &TestUnitTestFail, "Test Fail Unit Test");
