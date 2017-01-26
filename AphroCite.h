@@ -8,6 +8,7 @@
 // Includes
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 
 // bool
@@ -19,6 +20,11 @@ typedef unsigned int Boolean32;
 #define OR ||
 #define AND &&
 #define NOT !
+
+// memory
+#define Memory_Allocate malloc
+#define Memory_Free free
+#define Memory_Compare memcmp
 
 // print
 #define Console_Print_NextLine() printf("\n")
@@ -39,10 +45,18 @@ typedef unsigned int Boolean32;
 #define CString_Copy strcpy
 #define CString_Compare strcmp
 
-// memory
-#define Memory_Allocate malloc
-#define Memory_Free free
-#define Memory_Compare memcmp
+CString CString_Create_Format(int size, CString format, ...) {
+    CString newCString = Memory_Allocate(sizeof(char) * size);
+
+    va_list arglist;
+    va_start(arglist, format );
+
+    vsprintf(newCString, format, arglist);
+    
+    va_end( arglist );
+
+    return newCString;
+}
 
 // Unit Testing
 #define TEST_OK "Test OK: "
@@ -108,19 +122,20 @@ void Internal_UnitTest_Assert_True(T_UnitTest_TestResult* testResult, Boolean32 
     testResult->state = UNITTEST_TESTSTATE_SUCCESS;
 
     if(condition == FALSE) { 
-        //TODO(ans) put this into the testResult
-        Console_Print_CString_Format_Line("Assertion Failed: File: %s, Function: %s, Line: %d", file, function, line);
+        testResult->errorMessage = CString_Create_Format(255, "Assertion Failed: File: %s, Function: %s, Line: %d", file, function, line);
         testResult->state = UNITTEST_TESTSTATE_FAIL;
     }
 }
 
-#define UNITTEST_STRING_SUCCESS "SUCCESS"
-#define UNITTEST_STRING_FAIL "FAILED"
-
 typedef void (*UnitTestFunctionCallback)(T_UnitTest_TestResult* testResult);
 
 void UnitTest_RunSingle(T_UnitTest_TestSuite* testSuite, UnitTestFunctionCallback callback, CString description) {
-    Console_Print_CString_Format_Line("Start Test: %s ", description);
+    /*
+        Note(Norskan): Some people will notice that the memory allocated for testResult.errorMessage
+        is never freed. I actually do not care about that because the the os will clean up the memory anyway
+        after the program has exited.
+    */
+
     ++testSuite->testCount;
     T_UnitTest_TestResult testResult;
     callback(&testResult);
@@ -129,24 +144,33 @@ void UnitTest_RunSingle(T_UnitTest_TestSuite* testSuite, UnitTestFunctionCallbac
         ++testSuite->succeededCount;
         
         if(!testSuite->silentMode) {
-            Console_Print_CString_Format_Line(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET, UNITTEST_STRING_SUCCESS);
+            Console_Print_CString_Format_Line(TEXT_COLOR_GREEN "Test OK" TEXT_COLOR_RESET ":\t %s", description);
         }
     } else {
         ++testSuite->failedCount;
 
         if(!testSuite->silentMode) {
-             Console_Print_CString_Format_Line(TEXT_COLOR_RED "%s" TEXT_COLOR_RESET, UNITTEST_STRING_FAIL);
+             Console_Print_CString_Format_Line(TEXT_COLOR_RED  "Test FAIL" TEXT_COLOR_RESET ":\t %s -> %s", description, testResult.errorMessage);
         }
     } 
-    
-    Console_Print_NextLine();
 }
 
 void UnitTest_PrintTestSuiteState(T_UnitTest_TestSuite* testSuite) {
-    Console_Print_CString_Format_Line("Run \"%s\" Test Suite", testSuite->name);
-    Console_Print_CString_Format_Line("Tests Run: %d", testSuite->testCount);
-    Console_Print_CString_Format_Line("Tests Succeeded: %d", testSuite->succeededCount);
-    Console_Print_CString_Format_Line("Tests Failed: %d", testSuite->failedCount);
+    if(!testSuite->silentMode) {
+        Console_Print_CString_Line("-----Test Metrics -----");
+        Console_Print_CString_Format_Line("Run \"%s\" Test Suite", testSuite->name);
+        Console_Print_CString_Format_Line("Tests Run: %d", testSuite->testCount);
+        Console_Print_CString_Format_Line("Tests Succeeded: %d", testSuite->succeededCount);
+        Console_Print_CString_Format_Line("Tests Failed: %d", testSuite->failedCount);
+    }
+}
+
+int UnitTest_CreateExitCode(T_UnitTest_TestSuite* testSuite) {
+    if(testSuite->failedCount > 0) {
+        return EXIT_FAILURE;
+    } else {
+        return EXIT_SUCCESS;
+    }
 }
 
 

@@ -81,11 +81,12 @@ int main() {
 
     T_UnitTest_TestSuite testSuite = {0};
     testSuite.name = "New Unit Test";
+    testSuite.silentMode = FALSE;
 
     UnitTest_RunSingle(&testSuite, &TestUnitTestAssertTrueSuccess, "Test Success TRUE assert Unit Test");
     UnitTest_RunSingle(&testSuite, &TestUnitTestAssertTrueFail, "Test Fail TRUE assert Unit Test");
 
     UnitTest_PrintTestSuiteState(&testSuite);
 
-    return EXIT_SUCCESS;
+    return UnitTest_CreateExitCode(&testSuite);
 }
