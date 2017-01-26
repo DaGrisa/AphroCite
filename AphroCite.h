@@ -22,15 +22,20 @@ typedef unsigned int Boolean32;
 
 // print
 #define Console_Print_NextLine() printf("\n")
-#define Console_Print(cString) printf(cString)
-#define Console_Print_Line(cString) printf(cString "\n")
-#define Console_Print_Format(format, ...) printf(format, __VA_ARGS__)
-#define Console_Print_Format_Line(format, ...) printf(format "\n", __VA_ARGS__)
+#define Console_Print_CString(cString) printf(cString)
+#define Console_Print_CString_Line(cString) \
+    printf(cString); \
+    Console_Print_NextLine();
+#define Console_Print_CString_Format(format, ...) printf(format, __VA_ARGS__)
+#define Console_Print_CString_Format_Line(format, ...) \
+    printf(format, __VA_ARGS__); \
+    Console_Print_NextLine();
 #define Console_Read_Line(cString) scanf(cString)
 
 // c-string
 #define CString char*
 
+#define CString_Format(formatResult, toFormat, ...) sprintf(formatResult, toFormat, __VA_ARGS__)
 #define CString_Copy strcpy
 #define CString_Compare strcmp
 
@@ -48,15 +53,15 @@ typedef unsigned int Boolean32;
 #define TEXT_COLOR_RESET "\x1B[0m"
 
 void Test_SuccessMessage(CString message) {
-    Console_Print_Format_Line(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET "%s", TEST_OK, message);
+    Console_Print_CString_Format_Line(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET "%s", TEST_OK, message);
 }
 
 void Test_FailureMessage(CString message){
-    Console_Print_Format_Line(TEXT_COLOR_RED "%s " TEXT_COLOR_RESET "%s", TEST_FAILED, message);
+    Console_Print_CString_Format_Line(TEXT_COLOR_RED "%s " TEXT_COLOR_RESET "%s", TEST_FAILED, message);
     exit(EXIT_FAILURE);
 }
 
-void Test_CheckCondition Boolean32 condition, CString description){
+void Test_CheckCondition(Boolean32 condition, CString description){
     if(condition){
         Test_SuccessMessage(description);
     } else {
@@ -78,11 +83,12 @@ void Assert_Compare(CString description, void* actual, void* desired, int size){
 */
 
 typedef struct _T_UnitTest_TestSuite {
+    CString name;
+    Boolean32 silentMode;
+
     int testCount;
     int failedCount;
     int succeededCount;
-
-    CString name;
 } T_UnitTest_TestSuite;
 
 typedef enum _E_UnitTest_TestState {
@@ -90,47 +96,57 @@ typedef enum _E_UnitTest_TestState {
     UNITTEST_TESTSTATE_FAIL = 1
 } E_UnitTest_TestState;
 
-#define UNITTEST_SUCCESS return UNITTEST_TESTSTATE_SUCCESS
-#define UNITTEST_FAIL return UNITTEST_TESTSTATE_FAIL
+#define UnitTest_Assert_True(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, condition, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
+#define UnitTest_Assert_False(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, !(condition), __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 
-#define UnitTest_Assert_True(condition) return Internal_UnitTest_Assert_True(condition, __FILE__, __FUNCTION__, __LINE__)
-#define UnitTest_Assert_False(condition) return Internal_UnitTest_Assert_True(!(condition), __FILE__, __FUCNTION__, __LINE__)
+typedef struct _T_UnitTest_TestResult {
+    E_UnitTest_TestState state;
+    CString errorMessage;
+} T_UnitTest_TestResult;
 
-E_UnitTest_TestState Internal_UnitTest_Assert_True Boolean32 condition, CString file, CString function, int line) {
+void Internal_UnitTest_Assert_True(T_UnitTest_TestResult* testResult, Boolean32 condition, CString file, CString function, int line) {
+    testResult->state = UNITTEST_TESTSTATE_SUCCESS;
+
     if(condition == FALSE) { 
-        Console_Print_Format_Line("Assertion Failed: File: %s, Function: %s, Line: %d", file, function, line);
-        return UNITTEST_TESTSTATE_FAIL;
-    } else {
-        return UNITTEST_TESTSTATE_SUCCESS;
+        //TODO(ans) put this into the testResult
+        Console_Print_CString_Format_Line("Assertion Failed: File: %s, Function: %s, Line: %d", file, function, line);
+        testResult->state = UNITTEST_TESTSTATE_FAIL;
     }
 }
 
 #define UNITTEST_STRING_SUCCESS "SUCCESS"
 #define UNITTEST_STRING_FAIL "FAILED"
 
-typedef int (*UnitTestFunctionCallback)();
+typedef void (*UnitTestFunctionCallback)(T_UnitTest_TestResult* testResult);
 
 void UnitTest_RunSingle(T_UnitTest_TestSuite* testSuite, UnitTestFunctionCallback callback, CString description) {
-    Console_Print_Format_Line("Start Test: %s ", description);
+    Console_Print_CString_Format_Line("Start Test: %s ", description);
     ++testSuite->testCount;
-    E_UnitTest_TestState unitTestState = callback();
+    T_UnitTest_TestResult testResult;
+    callback(&testResult);
 
-    if(unitTestState == UNITTEST_TESTSTATE_SUCCESS) {
+    if(testResult.state == UNITTEST_TESTSTATE_SUCCESS) {
         ++testSuite->succeededCount;
-        Console_Print_Format_Line(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET, UNITTEST_STRING_SUCCESS);
-    } else if (UNITTEST_TESTSTATE_FAIL) {
+        
+        if(!testSuite->silentMode) {
+            Console_Print_CString_Format_Line(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET, UNITTEST_STRING_SUCCESS);
+        }
+    } else {
         ++testSuite->failedCount;
-        Console_Print_Format_Line(TEXT_COLOR_RED "%s" TEXT_COLOR_RESET, UNITTEST_STRING_FAIL);
+
+        if(!testSuite->silentMode) {
+             Console_Print_CString_Format_Line(TEXT_COLOR_RED "%s" TEXT_COLOR_RESET, UNITTEST_STRING_FAIL);
+        }
     } 
     
     Console_Print_NextLine();
 }
 
 void UnitTest_PrintTestSuiteState(T_UnitTest_TestSuite* testSuite) {
-    Console_Print_Format_Line("Run \"%s\" Test Suite", testSuite->name);
-    Console_Print_Format_Line("Tests Run: %d", testSuite->testCount);
-    Console_Print_Format_Line("Tests Succeeded: %d", testSuite->succeededCount);
-    Console_Print_Format_Line("Tests Failed: %d", testSuite->failedCount);
+    Console_Print_CString_Format_Line("Run \"%s\" Test Suite", testSuite->name);
+    Console_Print_CString_Format_Line("Tests Run: %d", testSuite->testCount);
+    Console_Print_CString_Format_Line("Tests Succeeded: %d", testSuite->succeededCount);
+    Console_Print_CString_Format_Line("Tests Failed: %d", testSuite->failedCount);
 }
 
 
