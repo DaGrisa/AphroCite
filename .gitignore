@@ -38,5 +38,11 @@
 *.suo
 
 # Visual Studio code
-*.\.vs
-*.\.vscode
+.vs
+.vscode
+
+# CMake
+CMakeFiles
+cmake_install.cmake
+Makefile
+CMakeCache.txt

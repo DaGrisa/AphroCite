@@ -60,13 +60,13 @@ void testString(){
     Assert_True("Compare Sring Macro", CString_Compare(formattedString, copyString) == 0);
 };
 
-void TestUnitTestAssertTrueSuccess(T_UnitTest_TestResult* testResult) {
+void TestUnitTestAssertTrueSuccess(UnitTest_TestResult* testResult) {
     UnitTest_Assert_True(testResult, TRUE);
 
     Console_Print_CString_Line("Should be reached!");
 }
 
-void TestUnitTestAssertTrueFail(T_UnitTest_TestResult* testResult) {
+void TestUnitTestAssertTrueFail(UnitTest_TestResult* testResult) {
     UnitTest_Assert_True(testResult, FALSE);
     Console_Print_CString_Line("Should not be reached!");
 }
@@ -85,7 +85,7 @@ int main() {
     Console_Print_CString_Line(".---------------------.");
     Console_Print_NextLine();
 
-    T_UnitTest_TestSuite testSuite = {0};
+    UnitTest_TestSuite testSuite = {0};
     testSuite.name = "New Unit Test";
     testSuite.silentMode = FALSE;
 

@@ -110,29 +110,29 @@ void Assert_Compare(CString description, void* actual, void* desired, int size){
     Unit Testing Functionallity
 */
 
-typedef struct _T_UnitTest_TestSuite {
+typedef struct {
     CString name;
     Boolean32 silentMode;
 
     int testCount;
     int failedCount;
     int succeededCount;
-} T_UnitTest_TestSuite;
+} UnitTest_TestSuite;
 
-typedef enum _E_UnitTest_TestState {
+typedef enum {
     UNITTEST_TESTSTATE_SUCCESS = 0,
     UNITTEST_TESTSTATE_FAIL = 1
-} E_UnitTest_TestState;
+} UnitTest_TestState;
 
 #define UnitTest_Assert_True(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, condition, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 #define UnitTest_Assert_False(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, !(condition), __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 
-typedef struct _T_UnitTest_TestResult {
-    E_UnitTest_TestState state;
+typedef struct {
+    UnitTest_TestState state;
     CString errorMessage;
-} T_UnitTest_TestResult;
+} UnitTest_TestResult;
 
-void Internal_UnitTest_Assert_True(T_UnitTest_TestResult* testResult, Boolean32 condition, CString file, const CString function, int line) {
+void Internal_UnitTest_Assert_True(UnitTest_TestResult* testResult, Boolean32 condition, CString file, const CString function, int line) {
     testResult->state = UNITTEST_TESTSTATE_SUCCESS;
 
     if(condition == FALSE) { 
@@ -141,9 +141,9 @@ void Internal_UnitTest_Assert_True(T_UnitTest_TestResult* testResult, Boolean32 
     }
 }
 
-typedef void (*UnitTestFunctionCallback)(T_UnitTest_TestResult* testResult);
+typedef void (*UnitTestFunctionCallback)(UnitTest_TestResult* testResult);
 
-void UnitTest_RunSingle(T_UnitTest_TestSuite* testSuite, UnitTestFunctionCallback callback, CString description) {
+void UnitTest_RunSingle(UnitTest_TestSuite* testSuite, UnitTestFunctionCallback callback, CString description) {
     /*
         Note(Norskan): Some people will notice that the memory allocated for testResult.errorMessage
         is never freed. I actually do not care about that because the the os will clean up the memory anyway
@@ -151,7 +151,7 @@ void UnitTest_RunSingle(T_UnitTest_TestSuite* testSuite, UnitTestFunctionCallbac
     */
 
     ++testSuite->testCount;
-    T_UnitTest_TestResult testResult;
+    UnitTest_TestResult testResult;
     callback(&testResult);
 
     if(testResult.state == UNITTEST_TESTSTATE_SUCCESS) {
@@ -169,7 +169,7 @@ void UnitTest_RunSingle(T_UnitTest_TestSuite* testSuite, UnitTestFunctionCallbac
     } 
 }
 
-void UnitTest_PrintTestSuiteState(T_UnitTest_TestSuite* testSuite) {
+void UnitTest_PrintTestSuiteState(UnitTest_TestSuite* testSuite) {
     if(!testSuite->silentMode) {
         Console_Print_CString_Line("-----Test Metrics -----");
         Console_Print_CString_Format_Line("Run \"%s\" Test Suite", testSuite->name);
@@ -179,7 +179,7 @@ void UnitTest_PrintTestSuiteState(T_UnitTest_TestSuite* testSuite) {
     }
 }
 
-int UnitTest_CreateExitCode(T_UnitTest_TestSuite* testSuite) {
+int UnitTest_CreateExitCode(UnitTest_TestSuite* testSuite) {
     if(testSuite->failedCount > 0) {
         return EXIT_FAILURE;
     } else {
