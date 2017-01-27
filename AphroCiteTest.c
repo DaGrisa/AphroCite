@@ -1,10 +1,12 @@
-//
-// Created by Daniel on 15.01.17.
-//
+/*
+    Created by Daniel on 15.01.17.
+*/
 
 #include "AphroCite.h"
 
-// Declaration
+/* 
+    Declaration 
+*/
 void testConstants();
 
 void testOperators();
@@ -13,7 +15,9 @@ void testMacros();
 void testStdlib();
 void testString();
 
-// Definition
+/*  
+    Definition
+*/
 void testConstants(){
     Assert_True("FALSE Constant", 0 == FALSE);
     Assert_True("TRUE Constant", 1 == TRUE);
@@ -67,7 +71,9 @@ void TestUnitTestAssertTrueFail(T_UnitTest_TestResult* testResult) {
     Console_Print_CString_Line("Should not be reached!");
 }
 
-// Main
+/* 
+    Main
+*/
 int main() {
     testConstants();
     testOperators();

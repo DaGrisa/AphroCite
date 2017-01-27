@@ -31,8 +31,12 @@
 # Debug files
 *.dSYM/
 *.su
-
 *.ilk
 *.pdb
 
+# Visual Studio
 *.suo
+
+# Visual Studio code
+.vs
+.vscode

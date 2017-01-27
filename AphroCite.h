@@ -1,32 +1,42 @@
-//
-// Created by Daniel on 14.01.17.
-//
+/*
+    Created by Daniel on 14.01.17.
+*/
 
 #ifndef APHROCITE_APHROCITE_H
 #define APHROCITE_APHROCITE_H
 
-// Includes
+/*
+    Includes
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 
-// bool
+/*
+    bool
+*/
 typedef unsigned int Boolean32;
 #define FALSE 0
 #define TRUE 1 
 
-// Operators
+/* 
+    Operators
+*/
 #define OR ||
 #define AND &&
 #define NOT !
 
-// memory
+/* 
+    Memory
+*/
 #define Memory_Allocate malloc
 #define Memory_Free free
 #define Memory_Compare memcmp
 
-// print
+/* 
+    Console
+*/
 #define Console_Print_NextLine() printf("\n")
 #define Console_Print_CString(cString) printf(cString)
 #define Console_Print_CString_Line(cString) \
@@ -38,7 +48,9 @@ typedef unsigned int Boolean32;
     Console_Print_NextLine();
 #define Console_Read_Line(cString) scanf(cString)
 
-// c-string
+/*
+    CString
+*/
 #define CString char*
 
 #define CString_Format(formatResult, toFormat, ...) sprintf(formatResult, toFormat, __VA_ARGS__)
@@ -58,7 +70,9 @@ CString CString_Create_Format(int size, CString format, ...) {
     return newCString;
 }
 
-// Unit Testing
+/*
+    Unit Testing
+*/
 #define TEST_OK "Test OK: "
 #define TEST_FAILED "Test FAILED: "
 
@@ -118,7 +132,7 @@ typedef struct _T_UnitTest_TestResult {
     CString errorMessage;
 } T_UnitTest_TestResult;
 
-void Internal_UnitTest_Assert_True(T_UnitTest_TestResult* testResult, Boolean32 condition, CString file, CString function, int line) {
+void Internal_UnitTest_Assert_True(T_UnitTest_TestResult* testResult, Boolean32 condition, CString file, const CString function, int line) {
     testResult->state = UNITTEST_TESTSTATE_SUCCESS;
 
     if(condition == FALSE) { 
@@ -174,4 +188,4 @@ int UnitTest_CreateExitCode(T_UnitTest_TestSuite* testSuite) {
 }
 
 
-#endif //APHROCITE_APHROCITE_H
+#endif
