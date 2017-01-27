@@ -38,5 +38,5 @@
 *.suo
 
 # Visual Studio code
-.vs
-.vscode
+*.\.vs
+*.\.vscode
