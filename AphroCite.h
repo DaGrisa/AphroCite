@@ -16,9 +16,10 @@
 /*
     bool
 */
-typedef unsigned int Boolean32;
-#define FALSE 0
-#define TRUE 1 
+typedef enum {
+    FALSE = 0,
+    TRUE = 1,
+} Boolean;
 
 /* 
     Operators
@@ -89,7 +90,7 @@ void Test_FailureMessage(CString message){
     exit(EXIT_FAILURE);
 }
 
-void Test_CheckCondition(Boolean32 condition, CString description){
+void Test_CheckCondition(Boolean condition, CString description){
     if(condition){
         Test_SuccessMessage(description);
     } else {
@@ -98,7 +99,7 @@ void Test_CheckCondition(Boolean32 condition, CString description){
     }
 }
 
-void Assert_True(CString description, Boolean32 condition){
+void Assert_True(CString description, Boolean condition){
     Test_CheckCondition(condition, description);
 }
 
@@ -112,7 +113,7 @@ void Assert_Compare(CString description, void* actual, void* desired, int size){
 
 typedef struct {
     CString name;
-    Boolean32 silentMode;
+    Boolean silentMode;
 
     int testCount;
     int failedCount;
@@ -132,7 +133,7 @@ typedef struct {
     CString errorMessage;
 } UnitTest_TestResult;
 
-void Internal_UnitTest_Assert_True(UnitTest_TestResult* testResult, Boolean32 condition, CString file, const CString function, int line) {
+void Internal_UnitTest_Assert_True(UnitTest_TestResult* testResult, Boolean condition, CString file, const CString function, int line) {
     testResult->state = UNITTEST_TESTSTATE_SUCCESS;
 
     if(condition == FALSE) { 
