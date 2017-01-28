@@ -42,11 +42,11 @@
 .vscode
 
 # CLion
-.idea
+.idea/
 
 # CMake
 CMakeFiles
 cmake_install.cmake
 Makefile
 CMakeCache.txt
-cmake-build-debug
+cmake-build-debug/
