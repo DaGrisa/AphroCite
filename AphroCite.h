@@ -31,7 +31,7 @@ typedef enum {
 /* 
     Memory
 */
-#define Memory_Allocate malloc
+#define Memory_Allocate_Init malloc
 #define Memory_Free free
 #define Memory_Compare memcmp
 
@@ -59,7 +59,7 @@ typedef enum {
 #define CString_Compare strcmp
 
 CString CString_Create_Format(int size, CString format, ...) {
-    CString newCString = Memory_Allocate(sizeof(char) * size);
+    CString newCString = Memory_Allocate_Init(sizeof(char) * size);
 
     va_list arglist;
     va_start(arglist, format );
@@ -74,42 +74,9 @@ CString CString_Create_Format(int size, CString format, ...) {
 /*
     Unit Testing
 */
-#define TEST_OK "Test OK: "
-#define TEST_FAILED "Test FAILED: "
-
 #define TEXT_COLOR_RED   "\x1B[31m"
 #define TEXT_COLOR_GREEN   "\x1B[32m"
 #define TEXT_COLOR_RESET "\x1B[0m"
-
-void Test_SuccessMessage(CString message) {
-    Console_Print_CString_Format_Line(TEXT_COLOR_GREEN "%s" TEXT_COLOR_RESET "%s", TEST_OK, message);
-}
-
-void Test_FailureMessage(CString message){
-    Console_Print_CString_Format_Line(TEXT_COLOR_RED "%s " TEXT_COLOR_RESET "%s", TEST_FAILED, message);
-    exit(EXIT_FAILURE);
-}
-
-void Test_CheckCondition(Boolean condition, CString description){
-    if(condition){
-        Test_SuccessMessage(description);
-    } else {
-        Test_FailureMessage(description);
-        exit(EXIT_FAILURE);
-    }
-}
-
-void Assert_True(CString description, Boolean condition){
-    Test_CheckCondition(condition, description);
-}
-
-void Assert_Compare(CString description, void* actual, void* desired, int size){
-    Test_CheckCondition(Memory_Compare(actual, desired, size) == 0, description);
-}
-
-/*
-    Unit Testing Functionallity
-*/
 
 typedef struct {
     CString name;
@@ -127,6 +94,9 @@ typedef enum {
 
 #define UnitTest_Assert_True(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, condition, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 #define UnitTest_Assert_False(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, !(condition), __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
+#define UnitTest_Assert_Memory_Same(testResultPointer, pointerA, pointerB, size) Internal_UnitTest_Assert_True(testResultPointer, Memory_Compare(pointerA, pointerB, size) == 0, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
+#define UnitTest_Assert_Memory_NotSame(testResultPointer, pointerA, pointerB, size) Internal_UnitTest_Assert_True(testResultPointer, Memory_Compare(pointerA, pointerB, size) != 0, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
+
 
 typedef struct {
     UnitTest_TestState state;
@@ -148,7 +118,8 @@ void UnitTest_RunSingle(UnitTest_TestSuite* testSuite, UnitTestFunctionCallback 
     /*
         Note(Norskan): Some people will notice that the memory allocated for testResult.errorMessage
         is never freed. I actually do not care about that because the the os will clean up the memory anyway
-        after the program has exited.
+        after the program has exited. If there is ever an memory issue because of running the unit test I will
+        change that ;)
     */
 
     ++testSuite->testCount;

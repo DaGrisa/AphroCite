@@ -4,93 +4,70 @@
 
 #include "AphroCite.h"
 
-/* 
-    Declaration 
-*/
-void testConstants();
-
-void testOperators();
-
-void testMacros();
-void testStdlib();
-void testString();
-
 /*  
     Definition
 */
-void testConstants(){
-    Assert_True("FALSE Constant", 0 == FALSE);
-    Assert_True("TRUE Constant", 1 == TRUE);
+void TestBooleanConstants(UnitTest_TestResult* testResult){
+    UnitTest_Assert_True(testResult, 0 == FALSE);
+    UnitTest_Assert_True(testResult, 1 == TRUE);
 }
 
-void testOperators(){
-    Assert_True("and Operator", 0 == FALSE AND 1 == TRUE);
-    Assert_True("or Operator", 0 == FALSE OR 1 == TRUE);
-    Assert_True("not Operator", 0 == NOT TRUE);
+void TestBooleanOperators(UnitTest_TestResult* testResult){
+    UnitTest_Assert_True(testResult, 0 == FALSE AND 1 == TRUE);
+    UnitTest_Assert_True(testResult, 0 == FALSE OR 1 == TRUE);
+    UnitTest_Assert_True(testResult, 0 == NOT TRUE);
 }
 
-void testMacros(){
-    testStdlib();
-    testString();
+void TestMemoryCompare(UnitTest_TestResult* testResult) {
+    int value = 42;
+    int* expected = &value;
+    int* actual = &value;
+
+    UnitTest_Assert_Memory_Same(testResult, actual, expected, sizeof(int));
+    UnitTest_Assert_True(testResult, Memory_Compare(actual, expected, sizeof(int)) == 0);
 }
 
-void testStdlib(){
-    int* pInteger;
-    pInteger = Memory_Allocate(sizeof(int));
-    *pInteger = 42;
+void TestMemoryAllocate(UnitTest_TestResult* testResult) {
+    int* actual = Memory_Allocate_Init(sizeof(int));
+    int* expected = Memory_Allocate_Init(sizeof(int));
 
-    int* pIntegerCompare;
-    pIntegerCompare = Memory_Allocate(sizeof(int));
-    *pIntegerCompare = 42;
+    UnitTest_Assert_Memory_Same(testResult, actual, expected, sizeof(int));
 
-    Assert_Compare("Allocate Memory Macro", pInteger, pIntegerCompare, sizeof(int));
+    *actual = 42;
 
-    Assert_True("Compare Memory Macro", Memory_Compare(&pInteger, &pIntegerCompare, sizeof(int)));
-
-    Memory_Free(pInteger);
-    Memory_Free(pIntegerCompare);
-};
-
-void testString(){
-    char formattedString[] = "It's all about the %d\n";
-    char copyString[] = "It's all about the 21\n";
-    CString_Copy(copyString, formattedString);
-
-    Assert_Compare("Copy String Macro", &copyString, &formattedString, sizeof(copyString));
-    Assert_True("Compare Sring Macro", CString_Compare(formattedString, copyString) == 0);
-};
-
-void TestUnitTestAssertTrueSuccess(UnitTest_TestResult* testResult) {
-    UnitTest_Assert_True(testResult, TRUE);
-
-    Console_Print_CString_Line("Should be reached!");
+    UnitTest_Assert_Memory_NotSame(testResult, actual, expected, sizeof(int));
 }
 
-void TestUnitTestAssertTrueFail(UnitTest_TestResult* testResult) {
-    UnitTest_Assert_True(testResult, FALSE);
-    Console_Print_CString_Line("Should not be reached!");
+void TestStringSame(UnitTest_TestResult* testResult) {
+    CString actual = "It's all about the 21";
+
+    UnitTest_Assert_Memory_Same(testResult, &actual, &actual, sizeof(actual));
+    UnitTest_Assert_True(testResult, CString_Compare(actual, actual) == 0);
 }
+
+void TestStringNotSame(UnitTest_TestResult* testResult) {
+    CString actual = "It's all about the 21";
+    CString expected = "It's all about the 42";
+
+    UnitTest_Assert_Memory_NotSame(testResult, &actual, &expected, sizeof(expected));
+    UnitTest_Assert_True(testResult, CString_Compare(actual, expected));
+}
+
 
 /* 
     Main
 */
 int main() {
-    testConstants();
-    testOperators();
-    testMacros();
-
-    Console_Print_NextLine();
-    Console_Print_CString_Line(".---------------------.");
-    Console_Print_CString_Line("| New Unit Test Style |");
-    Console_Print_CString_Line(".---------------------.");
-    Console_Print_NextLine();
-
     UnitTest_TestSuite testSuite = {0};
     testSuite.name = "New Unit Test";
     testSuite.silentMode = FALSE;
 
-    UnitTest_RunSingle(&testSuite, &TestUnitTestAssertTrueSuccess, "Test Success TRUE assert Unit Test");
-    UnitTest_RunSingle(&testSuite, &TestUnitTestAssertTrueFail, "Test Fail TRUE assert Unit Test");
+    UnitTest_RunSingle(&testSuite, &TestBooleanConstants, "Boolean Constants");
+    UnitTest_RunSingle(&testSuite, &TestBooleanOperators, "Boolean Operators");
+    UnitTest_RunSingle(&testSuite, &TestMemoryCompare, "Memory Compare");
+    UnitTest_RunSingle(&testSuite, &TestMemoryAllocate, "Memory Allocation");
+    UnitTest_RunSingle(&testSuite, &TestStringSame, "String Same");
+    UnitTest_RunSingle(&testSuite, &TestStringNotSame, "String not Same");
 
     UnitTest_PrintTestSuiteState(&testSuite);
 
