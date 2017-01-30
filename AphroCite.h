@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <assert.h>
 
 /*
     bool
@@ -72,36 +73,48 @@ CString CString_Create_Format(int size, CString format, ...) {
 }
 
 /*
+    Debug Asserts
+*/
+
+#define Debug_Assert_True(condition) assert(condition);
+
+/*
     Unit Testing
 */
 #define TEXT_COLOR_RED   "\x1B[31m"
 #define TEXT_COLOR_GREEN   "\x1B[32m"
 #define TEXT_COLOR_RESET "\x1B[0m"
 
-typedef struct {
-    CString name;
-    Boolean silentMode;
-
-    int testCount;
-    int failedCount;
-    int succeededCount;
-} UnitTest_TestSuite;
-
 typedef enum {
     UNITTEST_TESTSTATE_SUCCESS = 0,
     UNITTEST_TESTSTATE_FAIL = 1
 } UnitTest_TestState;
+
+typedef struct {
+    UnitTest_TestState state;
+    CString errorMessage;
+} UnitTest_TestResult;
+
+typedef void (*UnitTestFunctionCallback)(UnitTest_TestResult* testResult);
+
+typedef struct {
+    UnitTestFunctionCallback testFunction;
+    CString description;
+} TestDefinition;
+
+typedef struct {
+    CString name;
+    Boolean silentMode;
+
+    TestDefinition* testDefinitions;
+    int testDefininitionCount;
+} UnitTest_TestSuite;
 
 #define UnitTest_Assert_True(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, condition, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 #define UnitTest_Assert_False(testResultPointer, condition) Internal_UnitTest_Assert_True(testResultPointer, !(condition), __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 #define UnitTest_Assert_Memory_Same(testResultPointer, pointerA, pointerB, size) Internal_UnitTest_Assert_True(testResultPointer, Memory_Compare(pointerA, pointerB, size) == 0, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 #define UnitTest_Assert_Memory_NotSame(testResultPointer, pointerA, pointerB, size) Internal_UnitTest_Assert_True(testResultPointer, Memory_Compare(pointerA, pointerB, size) != 0, __FILE__, __FUNCTION__, __LINE__); if(testResult->state == UNITTEST_TESTSTATE_FAIL) return;
 
-
-typedef struct {
-    UnitTest_TestState state;
-    CString errorMessage;
-} UnitTest_TestResult;
 
 void Internal_UnitTest_Assert_True(UnitTest_TestResult* testResult, Boolean condition, CString file, const CString function, int line) {
     testResult->state = UNITTEST_TESTSTATE_SUCCESS;
@@ -112,9 +125,8 @@ void Internal_UnitTest_Assert_True(UnitTest_TestResult* testResult, Boolean cond
     }
 }
 
-typedef void (*UnitTestFunctionCallback)(UnitTest_TestResult* testResult);
 
-void UnitTest_RunSingle(UnitTest_TestSuite* testSuite, UnitTestFunctionCallback callback, CString description) {
+int UnitTest_RunTestSuite(UnitTest_TestSuite* testSuite) {
     /*
         Note(Norskan): Some people will notice that the memory allocated for testResult.errorMessage
         is never freed. I actually do not care about that because the the os will clean up the memory anyway
@@ -122,42 +134,51 @@ void UnitTest_RunSingle(UnitTest_TestSuite* testSuite, UnitTestFunctionCallback 
         change that ;)
     */
 
-    ++testSuite->testCount;
-    UnitTest_TestResult testResult;
-    callback(&testResult);
-
-    if(testResult.state == UNITTEST_TESTSTATE_SUCCESS) {
-        ++testSuite->succeededCount;
-        
-        if(!testSuite->silentMode) {
-            Console_Print_CString_Format_Line(TEXT_COLOR_GREEN "Test OK" TEXT_COLOR_RESET ":\t %s", description);
-        }
-    } else {
-        ++testSuite->failedCount;
-
-        if(!testSuite->silentMode) {
-             Console_Print_CString_Format_Line(TEXT_COLOR_RED  "Test FAIL" TEXT_COLOR_RESET ":\t %s -> %s", description, testResult.errorMessage);
-        }
-    } 
-}
-
-void UnitTest_PrintTestSuiteState(UnitTest_TestSuite* testSuite) {
     if(!testSuite->silentMode) {
-        Console_Print_CString_Line("-----Test Metrics -----");
-        Console_Print_CString_Format_Line("Run \"%s\" Test Suite", testSuite->name);
-        Console_Print_CString_Format_Line("Tests Run: %d", testSuite->testCount);
-        Console_Print_CString_Format_Line("Tests Succeeded: %d", testSuite->succeededCount);
-        Console_Print_CString_Format_Line("Tests Failed: %d", testSuite->failedCount);
+        Console_Print_CString_Line("----- Test Start -----");
+        Console_Print_CString_Format_Line("Executing Test Suite: %s", testSuite->name);
+        Console_Print_CString_Line("----- Test Results -----");
     }
-}
 
-int UnitTest_CreateExitCode(UnitTest_TestSuite* testSuite) {
-    if(testSuite->failedCount > 0) {
+    int testCount = testSuite->testDefininitionCount;
+    int failedCount = 0;
+    int succeededCount = 0;
+
+    int i;
+    for(i = 0; i < testCount; ++i) {
+        
+        CString description = testSuite->testDefinitions[i].description;
+        UnitTestFunctionCallback testFunction = testSuite->testDefinitions[i].testFunction;
+
+        UnitTest_TestResult testResult;
+        testFunction(&testResult);
+
+        if(testResult.state == UNITTEST_TESTSTATE_SUCCESS) {
+            ++succeededCount;
+
+            if(!testSuite->silentMode) {
+                Console_Print_CString_Format_Line(TEXT_COLOR_GREEN "Test OK" TEXT_COLOR_RESET ":\t %s", description);
+            }
+        } else {
+            ++failedCount;
+
+            if(!testSuite->silentMode) {
+                 Console_Print_CString_Format_Line(TEXT_COLOR_RED  "Test FAIL" TEXT_COLOR_RESET ":\t %s -> %s", description, testResult.errorMessage);
+            }
+        } 
+    }
+
+    if(!testSuite->silentMode) {
+        Console_Print_CString_Line("----- Test Metrics -----");
+        Console_Print_CString_Format_Line("Tests Run: %d", testCount);
+        Console_Print_CString_Format_Line("Tests Succeeded: %d", succeededCount);
+        Console_Print_CString_Format_Line("Tests Failed: %d", failedCount);
+    }
+
+    if(failedCount > 0) {
         return EXIT_FAILURE;
     } else {
         return EXIT_SUCCESS;
     }
 }
-
-
 #endif

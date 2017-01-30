@@ -59,17 +59,20 @@ void TestStringNotSame(UnitTest_TestResult* testResult) {
 */
 int main() {
     UnitTest_TestSuite testSuite = {0};
-    testSuite.name = "New Unit Test";
+    testSuite.name = "New Unit Tests";
     testSuite.silentMode = FALSE;
 
-    UnitTest_RunSingle(&testSuite, &TestBooleanConstants, "Boolean Constants");
-    UnitTest_RunSingle(&testSuite, &TestBooleanOperators, "Boolean Operators");
-    UnitTest_RunSingle(&testSuite, &TestMemoryCompare, "Memory Compare");
-    UnitTest_RunSingle(&testSuite, &TestMemoryAllocate, "Memory Allocation");
-    UnitTest_RunSingle(&testSuite, &TestStringSame, "String Same");
-    UnitTest_RunSingle(&testSuite, &TestStringNotSame, "String not Same");
+    TestDefinition testDefinitions[] = {
+        { &TestBooleanConstants, "Boolean Constants" },
+        { &TestBooleanOperators, "Boolean Operators" },
+        { &TestMemoryCompare, "Memory Compare" },
+        { &TestMemoryAllocate, "Memory Allocation" },
+        { &TestStringSame, "String Same" },
+        { &TestStringNotSame, "String not Same" }
+    };
 
-    UnitTest_PrintTestSuiteState(&testSuite);
+    testSuite.testDefinitions = testDefinitions;
+    testSuite.testDefininitionCount = sizeof(testDefinitions) / sizeof(testDefinitions[0]);
 
-    return UnitTest_CreateExitCode(&testSuite);
+    return UnitTest_RunTestSuite(&testSuite);
 }

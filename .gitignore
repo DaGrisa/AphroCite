@@ -41,6 +41,9 @@
 .vs
 .vscode
 
+# gcc
+*.stackdump
+
 # CLion
 .idea/
 
