@@ -53,6 +53,31 @@ void TestStringNotSame(UnitTest_TestResult* testResult) {
     UnitTest_Assert_True(testResult, CString_Compare(actual, expected));
 }
 
+void TestUnsignedIntegerTypes(UnitTest_TestResult* testResult) {
+    UnsignedInteger8 integer8 = UNSIGNED_INTEGER_8_MAX;
+    UnsignedInteger16 integer16 = UNSIGNED_INTEGER_16_MAX;
+    UnsignedInteger32 integer32 = UNSIGNED_INTEGER_32_MAX;
+
+    UnitTest_Assert_True(testResult, integer8 == 255);
+    UnitTest_Assert_True(testResult, integer16 == 65535);
+    UnitTest_Assert_True(testResult, integer32 == 4294967295);
+}
+
+void TestSignedIntegerTypes(UnitTest_TestResult* testResult) {
+    SignedInteger8 signedInteger8LowerBound = SIGNED_INTEGER_8_MIN;
+    SignedInteger8 signedInteger8UpperBound = SIGNED_INTEGER_8_MAX;
+    SignedInteger16 signedInteger16LowerBound = SIGNED_INTEGER_16_MIN;
+    SignedInteger16 signedInteger16UpperBound = SIGNED_INTEGER_16_MAX;
+    SignedInteger32 signedInteger32LowerBound = SIGNED_INTEGER_32_MIN;
+    SignedInteger32 signedInteger32UpperBound = SIGNED_INTEGER_32_MAX;
+
+    UnitTest_Assert_True(testResult, signedInteger8LowerBound == -128);
+    UnitTest_Assert_True(testResult, signedInteger8UpperBound == 127);
+    UnitTest_Assert_True(testResult, signedInteger16LowerBound == -32768);
+    UnitTest_Assert_True(testResult, signedInteger16UpperBound == 32767);
+    UnitTest_Assert_True(testResult, signedInteger32LowerBound == -2147483648);
+    UnitTest_Assert_True(testResult, signedInteger32UpperBound == 2147483647);
+}
 
 /* 
     Main
@@ -68,7 +93,9 @@ int main() {
         { &TestMemoryCompare, "Memory Compare" },
         { &TestMemoryAllocate, "Memory Allocation" },
         { &TestStringSame, "String Same" },
-        { &TestStringNotSame, "String not Same" }
+        { &TestStringNotSame, "String not Same" },
+        { &TestUnsignedIntegerTypes, "Unsigned Integer Types Boundary Checks" },
+        { &TestSignedIntegerTypes, "Signed Integer Types Boundary Checks" }
     };
 
     testSuite.testDefinitions = testDefinitions;
