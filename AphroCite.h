@@ -73,6 +73,27 @@ CString CString_Create_Format(int size, CString format, ...) {
 }
 
 /*
+    Integer
+*/
+
+#define UnsignedInteger8 uint8_t
+#define UNSIGNED_INTEGER_8_MAX  255
+#define UnsignedInteger16 uint16_t
+#define UNSIGNED_INTEGER_16_MAX 65535
+#define UnsignedInteger32 uint32_t
+#define UNSIGNED_INTEGER_32_MAX 4294967295
+
+#define SignedInteger8 int8_t
+#define SIGNED_INTEGER_8_MIN    -128
+#define SIGNED_INTEGER_8_MAX    127
+#define SignedInteger16 int16_t
+#define SIGNED_INTEGER_16_MIN   -32768
+#define SIGNED_INTEGER_16_MAX   32767
+#define SignedInteger32 int32_t
+#define SIGNED_INTEGER_32_MIN   -2147483648
+#define SIGNED_INTEGER_32_MAX   2147483647
+
+/*
     Debug Asserts
 */
 
