@@ -32,9 +32,9 @@ typedef enum {
 /* 
     Memory
 */
-#define Memory_Allocate_Init malloc
-#define Memory_Free free
-#define Memory_Compare memcmp
+#define Memory_Allocate_Init(size) malloc(size)
+#define Memory_Free(pointer) free(pointer)
+#define Memory_Compare(pointer1, pointer2, size) memcmp(pointer1, pointer2, size)
 
 /* 
     Console
@@ -56,8 +56,8 @@ typedef enum {
 #define CString char*
 
 #define CString_Format(formatResult, toFormat, ...) sprintf(formatResult, toFormat, __VA_ARGS__)
-#define CString_Copy strcpy
-#define CString_Compare strcmp
+#define CString_Copy(destinationStringPointer, sourceStringPointer) strcpy(destinationStringPointer, sourceStringPointer)
+#define CString_Compare(pointerString1, pointerString2) strcmp(pointerString1, pointerString2)
 
 CString CString_Create_Format(int size, CString format, ...) {
     CString newCString = Memory_Allocate_Init(sizeof(char) * size);
