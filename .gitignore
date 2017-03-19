@@ -31,6 +31,25 @@
 # Debug files
 *.dSYM/
 *.su
-
 *.ilk
 *.pdb
+
+# Visual Studio
+*.suo
+
+# Visual Studio code
+.vs
+.vscode
+
+# gcc
+*.stackdump
+
+# CLion
+.idea/
+
+# CMake
+CMakeFiles
+cmake_install.cmake
+Makefile
+CMakeCache.txt
+cmake-build-debug/
